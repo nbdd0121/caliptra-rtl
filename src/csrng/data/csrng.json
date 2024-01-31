@@ -106,7 +106,8 @@
       "type": "uni",
       "name": "otp_en_csrng_sw_app_read",
       "act": "rcv",
-      "package": "caliptra_prim_mubi_pkg"
+      "package": "caliptra_prim_mubi_pkg",
+      "default": "caliptra_prim_mubi_pkg::MuBi8True"
     },
     {
       "struct": "lc_tx",
