@@ -33,6 +33,7 @@ module sha3
   input                     rand_early_i,
   input      [StateW/2-1:0] rand_data_i,
   input                     rand_aux_i,
+  output logic              rand_update_o,
   output logic              rand_consumed_o,
 
   // N, S: Used in cSHAKE mode only
@@ -444,6 +445,7 @@ module sha3
     .rand_early_i,
     .rand_data_i,
     .rand_aux_i,
+    .rand_update_o,
     .rand_consumed_o,
 
     .run_i      (keccak_run     ),
