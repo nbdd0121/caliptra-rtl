@@ -119,31 +119,30 @@ addrmap entropy_src {
     } MODULE_ENABLE @ 0x20;
     reg {
         field {
-            desc = "Setting this field to `kMultiBitBool4True` selects the FIPS/CC compliant mode (or short FIPS mode).
-            In this mode, the ENTROPY_SRC block can generate FIPS qualified entropy.
-            Additional requirements to generate FIPS qualified entropy are i) that at most one of the !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields are set to `kMultiBitBool4True` but not both, and ii) that !!CONF.RNG_BIT_ENABLE is set to `kMultiBitBool4False`.
+            desc = "Setting this field to `kMultiBitBool4True` selects the mode targeting FIPS/CC compliance (in short FIPS mode) with hardware conditioning enabled.
+            The ENTROPY_SRC block will use the FIPS_WINDOW, FIPS_THRESH and FIPS_WATERMARK values of the !!HEALTH_TEST_WINDOWS, health test thresholds and watermark register, respectively.
+            Whether the ENTROPY_SRC block is indeed running with the configuration used for FIPS/CC validation is under the control of firmware.
+            Thus, firmware must explicitly mark the produced entropy as FIPS qualified using the !!CONF.FIPS_FLAG field.
+            Note that the hardware conditioning can still be disabled in FIPS mode by setting both !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields to `kMultiBitBool4True`.
+            However, no entropy is being passed to the block hardware interface in this mode.
 
             Setting this field to `kMultiBitBool4False` selects the boot-time / bypass mode in which the hardware conditioning is bypassed.";
             sw = rw;
         } FIPS_ENABLE[3:0] = 0x9;
         field {
-            desc = "Setting this field to `kMultiBitBool4True` will enable reading entropy values from the !!ENTROPY_DATA register.
-            This function also requires that the otp_en_entropy_src_fw_read input is set to `kMultiBitBool8True`.";
+            desc = "This flag indicates that the ENTROPY_SRC is setup with the configuration used for FIPS/CC validation.
+            Setting this field to `kMultiBitBool4True` will set the FIPS flag for the ENTROPY_SRC block output to true.";
             sw = rw;
-        } ENTROPY_DATA_REG_ENABLE[7:4] = 0x9;
+        } FIPS_FLAG[7:4] = 0x9;
         field {
-            desc = "This field controls the scope (either by-line or by-sum) of the health checks.
-            If set to `kMultiBitBool4True`, the Adaptive Proportion and Markov Tests will accumulate all RNG input lines into a single score, and thresholds will be applied to the sum all the entropy input lines.
-            If set to `kMultiBitBool4False`, the RNG input lines are all scored individually.
-            A statistical deviation in any one input line, be it due to coincidence or failure, will force rejection of the sample, and count toward the total alert count.";
+            desc = "Setting this field to `kMultiBitBool4True` sets the analog RNG into a conservative operation mode that may reduce the bit rate.
+            In this mode, the RNG potentially outputs entropy with higher entropy per bit and with a simpler sampling mechanism.";
             sw = rw;
-        } THRESHOLD_SCOPE[15:12] = 0x9;
+        } RNG_FIPS[11:8] = 0x9;
         field {
-            desc = "Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled.
-            Note that the ENTROPY_SRC block can only generate FIPS qualified entropy if this field is set to `kMultiBitBool4False`.
-            Additional requirements to generate FIPS qualified entropy are i) that !!CONF.FIPS_ENABLE is set to `kMultiBitBool4True`, and ii) that at most one of the !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields but not both are set to `kMultiBitBool4True`.";
+            desc = "Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled.";
             sw = rw;
-        } RNG_BIT_ENABLE[23:20] = 0x9;
+        } RNG_BIT_ENABLE[15:12] = 0x9;
         field {
             desc = "When the above bit iset, this field selects which bit from the RNG bus will
             be processed when in single RNG bit mode.
@@ -153,7 +152,19 @@ addrmap entropy_src {
             0b10: RNG bit 2
             0b11: RNG bit 3";
             sw = rw;
-        } RNG_BIT_SEL[25:24];
+        } RNG_BIT_SEL[17:16];
+        field {
+            desc = "This field controls the scope (either by-line or by-sum) of the health checks.
+            If set to `kMultiBitBool4True`, the Adaptive Proportion and Markov Tests will accumulate all RNG input lines into a single score, and thresholds will be applied to the sum all the entropy input lines.
+            If set to `kMultiBitBool4False`, the RNG input lines are all scored individually.
+            A statistical deviation in any one input line, be it due to coincidence or failure, will force rejection of the sample, and count toward the total alert count.";
+            sw = rw;
+        } THRESHOLD_SCOPE[21:18] = 0x9;
+        field {
+            desc = "Setting this field to `kMultiBitBool4True` will enable reading entropy values from the !!ENTROPY_DATA register.
+            This function also requires that the otp_en_entropy_src_fw_read input is set to `kMultiBitBool8True`.";
+            sw = rw;
+        } ENTROPY_DATA_REG_ENABLE[25:22] = 0x9;
     } CONF @ 0x24;
     reg {
         field {
@@ -167,10 +178,8 @@ addrmap entropy_src {
             desc = "When this field is `kMultiBitBool4False`, the hardware conditioning inside the ENTROPY_SRC block is enabled.
             Setting this field to `kMultiBitBool4True` will bypass the hardware conditioning.
             For this to work, also !!ENTROPY_CONTROL.ES_ROUTE needs to be set to `kMultiBitBool4True` to route the unconditioned, raw entropy to the !!ENTROPY_DATA register.
-            Alternatively, the hardware conditioning can be bypassed by setting !!CONF.FIPS_ENABLE to `kMultiBitBool4False` to disable FIPS mode and enable bypass / boot-time mode.
-            In both cases, the ENTROPY_SRC block will not generate FIPS qualified entropy.
-
-            To generate FIPS qualified entropy, i) !!CONF.FIPS_ENABLE needs to be set to `kMultiBitBool4True`, ii) !!CONF.RNG_BIT_ENABLE needs to be set to `kMultiBitBool4False`, and iii) at most one of the !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields needs to be set to `kMultiBitBool4True` but not both.";
+            Alternatively, the hardware conditioning can be bypassed by setting !!CONF.FIPS_ENABLE to `kMultiBitBool4False`.
+            This enables the bypass / boot-time mode.";
             sw = rw;
         } ES_TYPE[7:4] = 0x9;
     } ENTROPY_CONTROL @ 0x28;
@@ -859,6 +868,18 @@ addrmap entropy_src {
             sw = rw;
             onwrite = woclr;
         } ES_FW_OV_DISABLE_ALERT[16:16];
+        field {
+            desc = "This bit is set when the FIPS_FLAG field in the !!CONF register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+            Writing a zero resets this status bit.";
+            sw = rw;
+            onwrite = woclr;
+        } FIPS_FLAG_FIELD_ALERT[17:17];
+        field {
+            desc = "This bit is set when the RNG_FIPS field in the !!CONF register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.
+            Writing a zero resets this status bit.";
+            sw = rw;
+            onwrite = woclr;
+        } RNG_FIPS_FIELD_ALERT[18:18];
     } RECOV_ALERT_STS @ 0xD4;
     reg {
         field {

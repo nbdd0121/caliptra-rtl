@@ -311,34 +311,48 @@
           "bits": "3:0",
           "name": "FIPS_ENABLE",
           "mubi": true,
-          "desc": "Setting this field to `kMultiBitBool4True` selects the FIPS/CC compliant mode (or short FIPS mode).\nIn this mode, the ENTROPY_SRC block can generate FIPS qualified entropy.\nAdditional requirements to generate FIPS qualified entropy are i) that at most one of the !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields are set to `kMultiBitBool4True` but not both, and ii) that !!CONF.RNG_BIT_ENABLE is set to `kMultiBitBool4False`.\n\nSetting this field to `kMultiBitBool4False` selects the boot-time / bypass mode in which the hardware conditioning is bypassed.\n",
+          "desc": "Setting this field to `kMultiBitBool4True` selects the mode targeting FIPS/CC compliance (in short FIPS mode) with hardware conditioning enabled.\nThe ENTROPY_SRC block will use the FIPS_WINDOW, FIPS_THRESH and FIPS_WATERMARK values of the !!HEALTH_TEST_WINDOWS, health test thresholds and watermark register, respectively.\nWhether the ENTROPY_SRC block is indeed running with the configuration used for FIPS/CC validation is under the control of firmware.\nThus, firmware must explicitly mark the produced entropy as FIPS qualified using the !!CONF.FIPS_FLAG field.\nNote that the hardware conditioning can still be disabled in FIPS mode by setting both !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields to `kMultiBitBool4True`.\nHowever, no entropy is being passed to the block hardware interface in this mode.\n\nSetting this field to `kMultiBitBool4False` selects the boot-time / bypass mode in which the hardware conditioning is bypassed.",
           "resval": false
         },
         {
           "bits": "7:4",
-          "name": "ENTROPY_DATA_REG_ENABLE",
+          "name": "FIPS_FLAG",
           "mubi": true,
-          "desc": "Setting this field to `kMultiBitBool4True` will enable reading entropy values from the !!ENTROPY_DATA register.\nThis function also requires that the otp_en_entropy_src_fw_read input is set to `kMultiBitBool8True`.",
+          "desc": "This flag indicates that the ENTROPY_SRC is setup with the configuration used for FIPS/CC validation.\nSetting this field to `kMultiBitBool4True` will set the FIPS flag for the ENTROPY_SRC block output to true.",
+          "resval": false
+        },
+        {
+          "bits": "11:8",
+          "name": "RNG_FIPS",
+          "mubi": true,
+          "desc": "Setting this field to `kMultiBitBool4True` sets the analog RNG into a conservative operation mode that may reduce the bit rate.\nIn this mode, the RNG potentially outputs entropy with higher entropy per bit and with a simpler sampling mechanism.",
           "resval": false
         },
         {
           "bits": "15:12",
+          "name": "RNG_BIT_ENABLE",
+          "mubi": true,
+          "desc": "Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled.",
+          "resval": false
+        },
+        {
+          "bits": "17:16",
+          "name": "RNG_BIT_SEL",
+          "desc": "When the above bit iset, this field selects which bit from the RNG bus will\nbe processed when in single RNG bit mode.\nThis two bit field selects the RNG bit stream:\n0b00: RNG bit 0\n0b01: RNG bit 1\n0b10: RNG bit 2\n0b11: RNG bit 3"
+        },
+        {
+          "bits": "21:18",
           "name": "THRESHOLD_SCOPE",
           "mubi": true,
           "desc": "This field controls the scope (either by-line or by-sum) of the health checks.\nIf set to `kMultiBitBool4True`, the Adaptive Proportion and Markov Tests will accumulate all RNG input lines into a single score, and thresholds will be applied to the sum all the entropy input lines.\nIf set to `kMultiBitBool4False`, the RNG input lines are all scored individually.\nA statistical deviation in any one input line, be it due to coincidence or failure, will force rejection of the sample, and count toward the total alert count.",
           "resval": false
         },
         {
-          "bits": "23:20",
-          "name": "RNG_BIT_ENABLE",
+          "bits": "25:22",
+          "name": "ENTROPY_DATA_REG_ENABLE",
           "mubi": true,
-          "desc": "Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled.\nNote that the ENTROPY_SRC block can only generate FIPS qualified entropy if this field is set to `kMultiBitBool4False`.\nAdditional requirements to generate FIPS qualified entropy are i) that !!CONF.FIPS_ENABLE is set to `kMultiBitBool4True`, and ii) that at most one of the !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields but not both are set to `kMultiBitBool4True`.",
+          "desc": "Setting this field to `kMultiBitBool4True` will enable reading entropy values from the !!ENTROPY_DATA register.\nThis function also requires that the otp_en_entropy_src_fw_read input is set to `kMultiBitBool8True`.",
           "resval": false
-        },
-        {
-          "bits": "25:24",
-          "name": "RNG_BIT_SEL",
-          "desc": "When the above bit iset, this field selects which bit from the RNG bus will\nbe processed when in single RNG bit mode.\nThis two bit field selects the RNG bit stream:\n0b00: RNG bit 0\n0b01: RNG bit 1\n0b10: RNG bit 2\n0b11: RNG bit 3"
         }
       ]
     },
@@ -363,7 +377,7 @@
           "bits": "7:4",
           "name": "ES_TYPE",
           "mubi": true,
-          "desc": "When this field is `kMultiBitBool4False`, the hardware conditioning inside the ENTROPY_SRC block is enabled.\nSetting this field to `kMultiBitBool4True` will bypass the hardware conditioning.\nFor this to work, also !!ENTROPY_CONTROL.ES_ROUTE needs to be set to `kMultiBitBool4True` to route the unconditioned, raw entropy to the !!ENTROPY_DATA register.\nAlternatively, the hardware conditioning can be bypassed by setting !!CONF.FIPS_ENABLE to `kMultiBitBool4False` to disable FIPS mode and enable bypass / boot-time mode.\nIn both cases, the ENTROPY_SRC block will not generate FIPS qualified entropy.\n\nTo generate FIPS qualified entropy, i) !!CONF.FIPS_ENABLE needs to be set to `kMultiBitBool4True`, ii) !!CONF.RNG_BIT_ENABLE needs to be set to `kMultiBitBool4False`, and iii) at most one of the !!ENTROPY_CONTROL.ES_ROUTE and !!ENTROPY_CONTROL.ES_TYPE fields needs to be set to `kMultiBitBool4True` but not both.",
+          "desc": "When this field is `kMultiBitBool4False`, the hardware conditioning inside the ENTROPY_SRC block is enabled.\nSetting this field to `kMultiBitBool4True` will bypass the hardware conditioning.\nFor this to work, also !!ENTROPY_CONTROL.ES_ROUTE needs to be set to `kMultiBitBool4True` to route the unconditioned, raw entropy to the !!ENTROPY_DATA register.\nAlternatively, the hardware conditioning can be bypassed by setting !!CONF.FIPS_ENABLE to `kMultiBitBool4False`.\nThis enables the bypass / boot-time mode.",
           "resval": false
         }
       ]
@@ -1325,6 +1339,16 @@
           "bits": "16",
           "name": "ES_FW_OV_DISABLE_ALERT",
           "desc": "This bit is set when !!FW_OV_SHA3_START has been set to `kMultiBitBool4False`, without waiting for the bypass packer FIFO to clear.\nThe final entropy entry in the FIFO will not be included in the SHA3 digest.\n(Rather it will be added to the subsequent SHA3 digest.)\nTo avoid this alert, monitor !!FW_OV_WR_FIFO_FULL before clearing !!FW_OV_SHA3_START.\nThis alert only applies when both !!FW_OV_CONTROL.FW_OV_MODE and !!FW_OV_CONTROL.FW_OV_ENTROPY_INSERT are set to `kMultiBitBool4True`.\nWriting a zero resets this status bit."
+        },
+        {
+          "bits": "17",
+          "name": "FIPS_FLAG_FIELD_ALERT",
+          "desc": "This bit is set when the FIPS_FLAG field in the !!CONF register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.\nWriting a zero resets this status bit."
+        },
+        {
+          "bits": "18",
+          "name": "RNG_FIPS_FIELD_ALERT",
+          "desc": "This bit is set when the RNG_FIPS field in the !!CONF register is set to a value other than `kMultiBitBool4False` or `kMultiBitBool4True`.\nWriting a zero resets this status bit."
         }
       ]
     },

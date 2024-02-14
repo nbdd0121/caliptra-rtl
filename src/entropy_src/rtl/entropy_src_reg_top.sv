@@ -188,14 +188,18 @@ module entropy_src_reg_top #(
   logic conf_we;
   logic [3:0] conf_fips_enable_qs;
   logic [3:0] conf_fips_enable_wd;
-  logic [3:0] conf_entropy_data_reg_enable_qs;
-  logic [3:0] conf_entropy_data_reg_enable_wd;
-  logic [3:0] conf_threshold_scope_qs;
-  logic [3:0] conf_threshold_scope_wd;
+  logic [3:0] conf_fips_flag_qs;
+  logic [3:0] conf_fips_flag_wd;
+  logic [3:0] conf_rng_fips_qs;
+  logic [3:0] conf_rng_fips_wd;
   logic [3:0] conf_rng_bit_enable_qs;
   logic [3:0] conf_rng_bit_enable_wd;
   logic [1:0] conf_rng_bit_sel_qs;
   logic [1:0] conf_rng_bit_sel_wd;
+  logic [3:0] conf_threshold_scope_qs;
+  logic [3:0] conf_threshold_scope_wd;
+  logic [3:0] conf_entropy_data_reg_enable_qs;
+  logic [3:0] conf_entropy_data_reg_enable_wd;
   logic entropy_control_we;
   logic [3:0] entropy_control_es_route_qs;
   logic [3:0] entropy_control_es_route_wd;
@@ -387,6 +391,10 @@ module entropy_src_reg_top #(
   logic recov_alert_sts_es_fw_ov_wr_alert_wd;
   logic recov_alert_sts_es_fw_ov_disable_alert_qs;
   logic recov_alert_sts_es_fw_ov_disable_alert_wd;
+  logic recov_alert_sts_fips_flag_field_alert_qs;
+  logic recov_alert_sts_fips_flag_field_alert_wd;
+  logic recov_alert_sts_rng_fips_field_alert_qs;
+  logic recov_alert_sts_rng_fips_field_alert_wd;
   logic err_code_sfifo_esrng_err_qs;
   logic err_code_sfifo_observe_err_qs;
   logic err_code_sfifo_esfinal_err_qs;
@@ -890,19 +898,19 @@ module entropy_src_reg_top #(
     .qs     (conf_fips_enable_qs)
   );
 
-  //   F[entropy_data_reg_enable]: 7:4
+  //   F[fips_flag]: 7:4
   caliptra_prim_subreg #(
     .DW      (4),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9),
     .Mubi    (1'b1)
-  ) u_conf_entropy_data_reg_enable (
+  ) u_conf_fips_flag (
     .clk_i   (clk_i),
     .rst_ni  (rst_ni),
 
     // from register interface
     .we     (conf_gated_we),
-    .wd     (conf_entropy_data_reg_enable_wd),
+    .wd     (conf_fips_flag_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -910,26 +918,26 @@ module entropy_src_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.conf.entropy_data_reg_enable.q),
+    .q      (reg2hw.conf.fips_flag.q),
     .ds     (),
 
     // to register interface (read)
-    .qs     (conf_entropy_data_reg_enable_qs)
+    .qs     (conf_fips_flag_qs)
   );
 
-  //   F[threshold_scope]: 15:12
+  //   F[rng_fips]: 11:8
   caliptra_prim_subreg #(
     .DW      (4),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9),
     .Mubi    (1'b1)
-  ) u_conf_threshold_scope (
+  ) u_conf_rng_fips (
     .clk_i   (clk_i),
     .rst_ni  (rst_ni),
 
     // from register interface
     .we     (conf_gated_we),
-    .wd     (conf_threshold_scope_wd),
+    .wd     (conf_rng_fips_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -937,14 +945,14 @@ module entropy_src_reg_top #(
 
     // to internal hardware
     .qe     (),
-    .q      (reg2hw.conf.threshold_scope.q),
+    .q      (reg2hw.conf.rng_fips.q),
     .ds     (),
 
     // to register interface (read)
-    .qs     (conf_threshold_scope_qs)
+    .qs     (conf_rng_fips_qs)
   );
 
-  //   F[rng_bit_enable]: 23:20
+  //   F[rng_bit_enable]: 15:12
   caliptra_prim_subreg #(
     .DW      (4),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRW),
@@ -971,7 +979,7 @@ module entropy_src_reg_top #(
     .qs     (conf_rng_bit_enable_qs)
   );
 
-  //   F[rng_bit_sel]: 25:24
+  //   F[rng_bit_sel]: 17:16
   caliptra_prim_subreg #(
     .DW      (2),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRW),
@@ -996,6 +1004,60 @@ module entropy_src_reg_top #(
 
     // to register interface (read)
     .qs     (conf_rng_bit_sel_qs)
+  );
+
+  //   F[threshold_scope]: 21:18
+  caliptra_prim_subreg #(
+    .DW      (4),
+    .SwAccess(caliptra_prim_subreg_pkg::SwAccessRW),
+    .RESVAL  (4'h9),
+    .Mubi    (1'b1)
+  ) u_conf_threshold_scope (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (conf_gated_we),
+    .wd     (conf_threshold_scope_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.conf.threshold_scope.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (conf_threshold_scope_qs)
+  );
+
+  //   F[entropy_data_reg_enable]: 25:22
+  caliptra_prim_subreg #(
+    .DW      (4),
+    .SwAccess(caliptra_prim_subreg_pkg::SwAccessRW),
+    .RESVAL  (4'h9),
+    .Mubi    (1'b1)
+  ) u_conf_entropy_data_reg_enable (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (conf_gated_we),
+    .wd     (conf_entropy_data_reg_enable_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.conf.entropy_data_reg_enable.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (conf_entropy_data_reg_enable_qs)
   );
 
 
@@ -2881,6 +2943,60 @@ module entropy_src_reg_top #(
     .qs     (recov_alert_sts_es_fw_ov_disable_alert_qs)
   );
 
+  //   F[fips_flag_field_alert]: 17:17
+  caliptra_prim_subreg #(
+    .DW      (1),
+    .SwAccess(caliptra_prim_subreg_pkg::SwAccessW0C),
+    .RESVAL  (1'h0),
+    .Mubi    (1'b0)
+  ) u_recov_alert_sts_fips_flag_field_alert (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (recov_alert_sts_we),
+    .wd     (recov_alert_sts_fips_flag_field_alert_wd),
+
+    // from internal hardware
+    .de     (hw2reg.recov_alert_sts.fips_flag_field_alert.de),
+    .d      (hw2reg.recov_alert_sts.fips_flag_field_alert.d),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (recov_alert_sts_fips_flag_field_alert_qs)
+  );
+
+  //   F[rng_fips_field_alert]: 18:18
+  caliptra_prim_subreg #(
+    .DW      (1),
+    .SwAccess(caliptra_prim_subreg_pkg::SwAccessW0C),
+    .RESVAL  (1'h0),
+    .Mubi    (1'b0)
+  ) u_recov_alert_sts_rng_fips_field_alert (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (recov_alert_sts_we),
+    .wd     (recov_alert_sts_rng_fips_field_alert_wd),
+
+    // from internal hardware
+    .de     (hw2reg.recov_alert_sts.rng_fips_field_alert.de),
+    .d      (hw2reg.recov_alert_sts.rng_fips_field_alert.d),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (recov_alert_sts_rng_fips_field_alert_qs)
+  );
+
 
   // R[err_code]: V(False)
   //   F[sfifo_esrng_err]: 0:0
@@ -3422,13 +3538,17 @@ module entropy_src_reg_top #(
 
   assign conf_fips_enable_wd = reg_wdata[3:0];
 
-  assign conf_entropy_data_reg_enable_wd = reg_wdata[7:4];
+  assign conf_fips_flag_wd = reg_wdata[7:4];
 
-  assign conf_threshold_scope_wd = reg_wdata[15:12];
+  assign conf_rng_fips_wd = reg_wdata[11:8];
 
-  assign conf_rng_bit_enable_wd = reg_wdata[23:20];
+  assign conf_rng_bit_enable_wd = reg_wdata[15:12];
 
-  assign conf_rng_bit_sel_wd = reg_wdata[25:24];
+  assign conf_rng_bit_sel_wd = reg_wdata[17:16];
+
+  assign conf_threshold_scope_wd = reg_wdata[21:18];
+
+  assign conf_entropy_data_reg_enable_wd = reg_wdata[25:22];
   assign entropy_control_we = addr_hit[10] & reg_we & !reg_error;
 
   assign entropy_control_es_route_wd = reg_wdata[3:0];
@@ -3570,6 +3690,10 @@ module entropy_src_reg_top #(
   assign recov_alert_sts_es_fw_ov_wr_alert_wd = reg_wdata[15];
 
   assign recov_alert_sts_es_fw_ov_disable_alert_wd = reg_wdata[16];
+
+  assign recov_alert_sts_fips_flag_field_alert_wd = reg_wdata[17];
+
+  assign recov_alert_sts_rng_fips_field_alert_wd = reg_wdata[18];
   assign err_code_test_we = addr_hit[55] & reg_we & !reg_error;
 
   assign err_code_test_wd = reg_wdata[4:0];
@@ -3690,10 +3814,12 @@ module entropy_src_reg_top #(
 
       57'h000000000000200: begin
         reg_rdata_next[3:0] = conf_fips_enable_qs;
-        reg_rdata_next[7:4] = conf_entropy_data_reg_enable_qs;
-        reg_rdata_next[15:12] = conf_threshold_scope_qs;
-        reg_rdata_next[23:20] = conf_rng_bit_enable_qs;
-        reg_rdata_next[25:24] = conf_rng_bit_sel_qs;
+        reg_rdata_next[7:4] = conf_fips_flag_qs;
+        reg_rdata_next[11:8] = conf_rng_fips_qs;
+        reg_rdata_next[15:12] = conf_rng_bit_enable_qs;
+        reg_rdata_next[17:16] = conf_rng_bit_sel_qs;
+        reg_rdata_next[21:18] = conf_threshold_scope_qs;
+        reg_rdata_next[25:22] = conf_entropy_data_reg_enable_qs;
       end
 
       57'h000000000000400: begin
@@ -3920,6 +4046,8 @@ module entropy_src_reg_top #(
         reg_rdata_next[14] = recov_alert_sts_es_thresh_cfg_alert_qs;
         reg_rdata_next[15] = recov_alert_sts_es_fw_ov_wr_alert_qs;
         reg_rdata_next[16] = recov_alert_sts_es_fw_ov_disable_alert_qs;
+        reg_rdata_next[17] = recov_alert_sts_fips_flag_field_alert_qs;
+        reg_rdata_next[18] = recov_alert_sts_rng_fips_field_alert_qs;
       end
 
       57'h040000000000000: begin
