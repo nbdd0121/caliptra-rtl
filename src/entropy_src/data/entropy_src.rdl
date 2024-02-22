@@ -140,12 +140,11 @@ addrmap entropy_src {
             sw = rw;
         } RNG_FIPS[11:8] = 0x9;
         field {
-            desc = "Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled.";
+            desc = "Setting this field to `kMultiBitBool4True` enables the single RNG bit mode, where only one bit is sampled per symbol.";
             sw = rw;
         } RNG_BIT_ENABLE[15:12] = 0x9;
         field {
-            desc = "When the above bit iset, this field selects which bit from the RNG bus will
-            be processed when in single RNG bit mode.
+            desc = "When !!CONF.RNG_BIT_ENABLE is set, this field selects which bit from the RNG bus will be processed.
             This two bit field selects the RNG bit stream:
             0b00: RNG bit 0
             0b01: RNG bit 1
