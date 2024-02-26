@@ -457,6 +457,7 @@ module entropy_src_core
   logic                    unused_sha3_state;
   logic                    unused_entropy_data;
   logic                    unused_fw_ov_rd_data;
+  logic                    unused_sfifo_esrng_not_full;
 
   caliptra_prim_mubi_pkg::mubi8_t en_entropy_src_fw_read;
   caliptra_prim_mubi_pkg::mubi8_t en_entropy_src_fw_over;
@@ -788,8 +789,7 @@ module entropy_src_core
   // rng_enable is being used in other clock domains. Need to latch the
   // signal.
   assign rng_enable_d = es_enable_fo[1] &&
-                        es_delayed_enable &&
-                        sfifo_esrng_not_full;
+                        es_delayed_enable;
 
   assign entropy_src_rng_o.rng_enable = rng_enable_q;
 
@@ -2926,6 +2926,7 @@ module entropy_src_core
   assign unused_sha3_state = (|sha3_state[0][sha3_pkg::StateW-1:SeedLen]);
   assign unused_entropy_data = (|reg2hw.entropy_data.q);
   assign unused_fw_ov_rd_data = (|reg2hw.fw_ov_rd_data.q);
+  assign unused_sfifo_esrng_not_full = (|sfifo_esrng_not_full);
 
   //--------------------------------------------
   // Assertions
