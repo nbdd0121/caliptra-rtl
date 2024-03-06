@@ -373,7 +373,6 @@ module entropy_src_core
 
   logic [PreCondWidth-1:0]  pfifo_cond_wdata;
   logic [SeedLen-1:0]       pfifo_cond_rdata;
-  logic                     pfifo_cond_not_empty;
   logic                     pfifo_cond_push;
 
   logic [ObserveFifoWidth-1:0] pfifo_precon_wdata;
@@ -2707,7 +2706,6 @@ module entropy_src_core
   assign msg_data[0] = pfifo_cond_wdata;
 
   assign pfifo_cond_rdata = sha3_state[0][SeedLen-1:0];
-  assign pfifo_cond_not_empty = sha3_state_vld;
 
   // SHA3 hashing engine
   sha3 #(
@@ -2831,7 +2829,6 @@ module entropy_src_core
     .alert_thresh_fail_i  (alert_threshold_fail),
     .rst_alert_cntr_o     (rst_alert_cntr),
     .bypass_mode_i        (es_bypass_mode),
-    .main_stage_rdy_i     (pfifo_cond_not_empty),
     .bypass_stage_rdy_i   (pfifo_bypass_not_empty),
     .sha3_state_vld_i     (sha3_state_vld),
     .main_stage_push_o    (main_stage_push_raw),
@@ -2840,7 +2837,6 @@ module entropy_src_core
     .sha3_start_o         (sha3_start_raw),
     .sha3_process_o       (sha3_process),
     .sha3_done_o          (sha3_done),
-    .cs_aes_halt_ack_i    (cs_aes_halt_i.cs_aes_halt_ack),
     .local_escalate_i     (es_cntr_err_sum),
     .main_sm_alert_o      (es_main_sm_alert),
     .main_sm_idle_o       (es_main_sm_idle),
