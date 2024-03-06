@@ -398,6 +398,7 @@ module entropy_src_reg_top #(
   logic recov_alert_sts_postht_entropy_drop_alert_qs;
   logic recov_alert_sts_postht_entropy_drop_alert_wd;
   logic err_code_sfifo_esrng_err_qs;
+  logic err_code_sfifo_distr_err_qs;
   logic err_code_sfifo_observe_err_qs;
   logic err_code_sfifo_esfinal_err_qs;
   logic err_code_es_ack_sm_err_qs;
@@ -3055,7 +3056,34 @@ module entropy_src_reg_top #(
     .qs     (err_code_sfifo_esrng_err_qs)
   );
 
-  //   F[sfifo_observe_err]: 1:1
+  //   F[sfifo_distr_err]: 1:1
+  caliptra_prim_subreg #(
+    .DW      (1),
+    .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
+    .RESVAL  (1'h0),
+    .Mubi    (1'b0)
+  ) u_err_code_sfifo_distr_err (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (1'b0),
+    .wd     ('0),
+
+    // from internal hardware
+    .de     (hw2reg.err_code.sfifo_distr_err.de),
+    .d      (hw2reg.err_code.sfifo_distr_err.d),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (err_code_sfifo_distr_err_qs)
+  );
+
+  //   F[sfifo_observe_err]: 2:2
   caliptra_prim_subreg #(
     .DW      (1),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
@@ -3082,7 +3110,7 @@ module entropy_src_reg_top #(
     .qs     (err_code_sfifo_observe_err_qs)
   );
 
-  //   F[sfifo_esfinal_err]: 2:2
+  //   F[sfifo_esfinal_err]: 3:3
   caliptra_prim_subreg #(
     .DW      (1),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
@@ -4084,8 +4112,9 @@ module entropy_src_reg_top #(
 
       57'h040000000000000: begin
         reg_rdata_next[0] = err_code_sfifo_esrng_err_qs;
-        reg_rdata_next[1] = err_code_sfifo_observe_err_qs;
-        reg_rdata_next[2] = err_code_sfifo_esfinal_err_qs;
+        reg_rdata_next[1] = err_code_sfifo_distr_err_qs;
+        reg_rdata_next[2] = err_code_sfifo_observe_err_qs;
+        reg_rdata_next[3] = err_code_sfifo_esfinal_err_qs;
         reg_rdata_next[20] = err_code_es_ack_sm_err_qs;
         reg_rdata_next[21] = err_code_es_main_sm_err_qs;
         reg_rdata_next[22] = err_code_es_cntr_err_qs;
