@@ -185,7 +185,8 @@ module csrng_reg_top #(
   logic cmd_req_we;
   logic [31:0] cmd_req_wd;
   logic sw_cmd_sts_cmd_rdy_qs;
-  logic sw_cmd_sts_cmd_sts_qs;
+  logic sw_cmd_sts_cmd_ack_qs;
+  logic [1:0] sw_cmd_sts_cmd_sts_qs;
   logic genbits_vld_re;
   logic genbits_vld_genbits_vld_qs;
   logic genbits_vld_genbits_fips_qs;
@@ -725,11 +726,11 @@ module csrng_reg_top #(
 
 
   // R[sw_cmd_sts]: V(False)
-  //   F[cmd_rdy]: 0:0
+  //   F[cmd_rdy]: 1:1
   caliptra_prim_subreg #(
     .DW      (1),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
-    .RESVAL  (1'h1),
+    .RESVAL  (1'h0),
     .Mubi    (1'b0)
   ) u_sw_cmd_sts_cmd_rdy (
     .clk_i   (clk_i),
@@ -752,11 +753,38 @@ module csrng_reg_top #(
     .qs     (sw_cmd_sts_cmd_rdy_qs)
   );
 
-  //   F[cmd_sts]: 1:1
+  //   F[cmd_ack]: 2:2
   caliptra_prim_subreg #(
     .DW      (1),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0),
+    .Mubi    (1'b0)
+  ) u_sw_cmd_sts_cmd_ack (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (1'b0),
+    .wd     ('0),
+
+    // from internal hardware
+    .de     (hw2reg.sw_cmd_sts.cmd_ack.de),
+    .d      (hw2reg.sw_cmd_sts.cmd_ack.d),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (sw_cmd_sts_cmd_ack_qs)
+  );
+
+  //   F[cmd_sts]: 4:3
+  caliptra_prim_subreg #(
+    .DW      (2),
+    .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
+    .RESVAL  (2'h0),
     .Mubi    (1'b0)
   ) u_sw_cmd_sts_cmd_sts (
     .clk_i   (clk_i),
@@ -2037,8 +2065,9 @@ module csrng_reg_top #(
       end
 
       17'h00080: begin
-        reg_rdata_next[0] = sw_cmd_sts_cmd_rdy_qs;
-        reg_rdata_next[1] = sw_cmd_sts_cmd_sts_qs;
+        reg_rdata_next[1] = sw_cmd_sts_cmd_rdy_qs;
+        reg_rdata_next[2] = sw_cmd_sts_cmd_ack_qs;
+        reg_rdata_next[4:3] = sw_cmd_sts_cmd_sts_qs;
       end
 
       17'h00100: begin
