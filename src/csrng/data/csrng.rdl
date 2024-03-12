@@ -163,9 +163,12 @@ addrmap csrng {
                  In this case the entropy complex should be restarted to properly zeroize the state.
             0x3: Request completed with an invalid counter drbg generation command error.
                  This error indicates that CSRNG entropy was generated for a command that is not a generate command.
-                 In this case the entropy should not be considered as valid.";
+                 In this case the entropy should not be considered as valid.
+            0x4: This error indicates that the last command was issued out of sequence.
+                 This happens when a command other than instantiate was issued without sending an instantiate command first.
+                 This can also happen when an uninstantiate command is sent without instantiating first.";
             sw = r;
-        } CMD_STS[4:3] = 0x0;
+        } CMD_STS[5:3] = 0x0;
     } SW_CMD_STS @ 0x1C;
     reg {
         field {
@@ -267,11 +270,23 @@ addrmap csrng {
             onwrite = woclr;
         } CS_BUS_CMP_ALERT[12:12];
         field {
-            desc = "This bit is set when an unsupported/illegal CSRNG command is being processed.
-            The main FSM will hang unless the module enable field is set to the disabled state.";
+            desc = "This bit is set when an unsupported/illegal CSRNG command is received by the
+            main state machine.
+            The invalid command is ignored and CSRNG continues to operate.
+            Writing a zero resets this status bit.";
             sw = rw;
             onwrite = woclr;
         } CS_MAIN_SM_ALERT[13:13];
+        field {
+            desc = "This bit is set when an out of order command is received by the main state machine.
+            This happens when an instantiate command is sent for a state that was already
+            instantiated or when any command other than instantiate is sent for a state that
+            wasn't instantiated yet.
+            The invalid command is ignored and CSRNG continues to operate.
+            Writing a zero resets this status bit.";
+            sw = rw;
+            onwrite = woclr;
+        } CS_MAIN_SM_INVALID_CMD_SEQ[14:14];
     } RECOV_ALERT_STS @ 0x34;
     reg {
         field {
