@@ -61,7 +61,7 @@ module entropy_src_core
   import caliptra_prim_mubi_pkg::mubi4_test_false_loose;
   import caliptra_prim_mubi_pkg::mubi4_test_invalid;
 
-  localparam int Clog2EsFifoDepth = $clog2(EsFifoDepth);
+  localparam int EsFifoDepthW = caliptra_prim_util_pkg::vbits(EsFifoDepth);
   localparam int PostHTWidth = 32;
   localparam int RngBusWidth = 4;
   localparam int HalfRegWidth = 16;
@@ -156,7 +156,7 @@ module entropy_src_core
   logic                           sfifo_observe_int_err;
   logic [2:0]                     sfifo_observe_err;
 
-  logic [Clog2EsFifoDepth:0] sfifo_esfinal_depth;
+  logic [EsFifoDepthW-1:0]   sfifo_esfinal_depth;
   logic [(1+SeedLen)-1:0]    sfifo_esfinal_wdata;
   logic [(1+SeedLen)-1:0]    sfifo_esfinal_rdata;
   logic                      sfifo_esfinal_push;

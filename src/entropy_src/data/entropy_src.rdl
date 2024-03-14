@@ -737,7 +737,7 @@ addrmap entropy_src {
         field {
             desc = "This is the depth of the entropy source FIFO.";
             sw = r;
-        } ENTROPY_FIFO_DEPTH[2:0];
+        } ENTROPY_FIFO_DEPTH[1:0];
         field {
             desc = "This is the SHA3 finite state machine current state.";
             sw = r;

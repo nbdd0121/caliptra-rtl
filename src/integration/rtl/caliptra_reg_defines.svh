@@ -4961,7 +4961,7 @@
 `define CLP_ENTROPY_SRC_REG_DEBUG_STATUS                                                            (32'h200030d0)
 `define ENTROPY_SRC_REG_DEBUG_STATUS                                                                (32'hd0)
 `define ENTROPY_SRC_REG_DEBUG_STATUS_ENTROPY_FIFO_DEPTH_LOW                                         (0)
-`define ENTROPY_SRC_REG_DEBUG_STATUS_ENTROPY_FIFO_DEPTH_MASK                                        (32'h7)
+`define ENTROPY_SRC_REG_DEBUG_STATUS_ENTROPY_FIFO_DEPTH_MASK                                        (32'h3)
 `define ENTROPY_SRC_REG_DEBUG_STATUS_SHA3_FSM_LOW                                                   (3)
 `define ENTROPY_SRC_REG_DEBUG_STATUS_SHA3_FSM_MASK                                                  (32'h38)
 `define ENTROPY_SRC_REG_DEBUG_STATUS_SHA3_BLOCK_PR_LOW                                              (6)
