@@ -725,13 +725,13 @@ addrmap entropy_src {
             will be compared with when setting the interrupt status bit.
             Note: a value of zero is reserved and not to be used.";
             sw = rw;
-        } OBSERVE_FIFO_THRESH[6:0] = 0x20;
+        } OBSERVE_FIFO_THRESH[5:0] = 0x10;
     } OBSERVE_FIFO_THRESH @ 0xC8;
     reg {
         field {
             desc = "This field will hold the current depth of the observe FIFO.";
             sw = r;
-        } OBSERVE_FIFO_DEPTH[6:0];
+        } OBSERVE_FIFO_DEPTH[5:0];
     } OBSERVE_FIFO_DEPTH @ 0xCC;
     reg {
         field {

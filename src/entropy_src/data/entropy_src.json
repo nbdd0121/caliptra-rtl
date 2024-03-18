@@ -126,7 +126,7 @@
     {
       "name": "ObserveFifoDepth",
       "type": "int unsigned",
-      "default": "64",
+      "default": "32",
       "desc": " Number of 32-bit entries in the observe FIFO.\n Note that upon changing this parameter, the bit widths of the !!OBSERVE_FIFO_THRESH and !!OBSERVE_FIFO_DEPTH registers have to be manually adjusted.\n ",
       "local": "true"
     }
@@ -1206,9 +1206,9 @@
       "regwen": "REGWEN",
       "fields": [
         {
-          "bits": "6:0",
+          "bits": "5:0",
           "desc": "This field will set the threshold that the depth of the observe FIFO\nwill be compared with when setting the interrupt status bit.\nNote: a value of zero is reserved and not to be used.",
-          "resval": "0x20"
+          "resval": "0x10"
         }
       ]
     },
@@ -1220,7 +1220,7 @@
       "hwext": "true",
       "fields": [
         {
-          "bits": "6:0",
+          "bits": "5:0",
           "desc": "This field will hold the current depth of the observe FIFO."
         }
       ]
