@@ -3,22 +3,22 @@ addrmap entropy_src {
         field {
             sw = rw;
             onwrite = woclr;
-            desc = "Asserted when entropy source bits are available.";
+            desc = "Asserted when entropy source bits are available for firmware for consumption via !!ENTROPY_DATA register.";
         } ES_ENTROPY_VALID[0:0];
         field {
             sw = rw;
             onwrite = woclr;
-            desc = "Asserted when the alert count has been met.";
+            desc = "Asserted whenever the main state machine is in the alert state, e.g., due to health tests failing and reaching the threshold value configured in !!ALERT_THRESHOLD.";
         } ES_HEALTH_TEST_FAILED[1:1];
         field {
             sw = rw;
             onwrite = woclr;
-            desc = "Asserted when the observe FIFO has filled to the threshold level.";
+            desc = "Asserted when the observe FIFO has filled to the configured threshold level (see !!OBSERVE_FIFO_THRESH).";
         } ES_OBSERVE_FIFO_READY[2:2];
         field {
             sw = rw;
             onwrite = woclr;
-            desc = "Asserted when a FIFO error occurs, or if an illegal state machine state is reached.";
+            desc = "Asserted when an fatal error condition is met, e.g., upon FIFO errors, or if an illegal state machine state is reached.";
         } ES_FATAL_ERR[3:3];
     } INTERRUPT_STATE @ 0x0;
     reg {
