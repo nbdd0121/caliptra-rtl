@@ -559,9 +559,7 @@ addrmap entropy_src {
     } EXTHT_LO_TOTAL_FAILS @ 0x9C;
     reg {
         field {
-            desc = "This is the threshold size that will signal an alert when
-            value is reached. A value of zero will disable alerts.
-            The default value is 2.";
+            desc = "This is the threshold at which a recoverable alert is signaled and the blocks stops operating.";
             sw = rw;
         } ALERT_THRESHOLD[15:0] = 0x2;
         field {
@@ -571,78 +569,47 @@ addrmap entropy_src {
     } ALERT_THRESHOLD @ 0xA0;
     reg {
         field {
-            desc = "This field will hold a running count of
-            the total alert count, which is a sum of all of the other
-            counters in the !!ALERT_FAIL_COUNTS register.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of subsequent health test windows during which one or more health tests failed.";
             sw = r;
         } ANY_FAIL_COUNT[15:0];
     } ALERT_SUMMARY_FAIL_COUNTS @ 0xA4;
     reg {
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } REPCNT_FAIL_COUNT[7:4];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } ADAPTP_HI_FAIL_COUNT[11:8];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } ADAPTP_LO_FAIL_COUNT[15:12];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } BUCKET_FAIL_COUNT[19:16];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } MARKOV_HI_FAIL_COUNT[23:20];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } MARKOV_LO_FAIL_COUNT[27:24];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } REPCNTS_FAIL_COUNT[31:28];
     } ALERT_FAIL_COUNTS @ 0xA8;
     reg {
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } EXTHT_HI_FAIL_COUNT[3:0];
         field {
-            desc = "This field will hold a running count of test failures that
-            contribute to the total alert count.
-            It will be reset after every passing test sequence unless in firmware override mode (extract and insert only).
-            If an alert is signaled, this value will persist until it is cleared.";
+            desc = "The number of health test windows during which this test failed since the last passing health test window.";
             sw = r;
         } EXTHT_LO_FAIL_COUNT[7:4];
     } EXTHT_FAIL_COUNTS @ 0xAC;
