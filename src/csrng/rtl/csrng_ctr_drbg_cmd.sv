@@ -6,6 +6,8 @@
 //
 // Accepts all csrng commands
 
+`include "caliptra_prim_assert.sv"
+
 module csrng_ctr_drbg_cmd import csrng_pkg::*; #(
   parameter logic [31:0] Cmd = 3,
   parameter logic [31:0] StateId = 4,
@@ -71,7 +73,6 @@ module csrng_ctr_drbg_cmd import csrng_pkg::*; #(
   localparam logic[31:0] RCStageFifoWidth = KeyLen+BlkLen+StateId+CtrLen+1+SeedLen+1+Cmd;
   localparam logic[31:0] KeyVRCFifoDepth = 1;
   localparam logic[31:0] KeyVRCFifoWidth = KeyLen+BlkLen+CtrLen+1+SeedLen+1+StateId+Cmd;
-  localparam logic[31:0] UniZeroizeWidth = KeyLen+BlkLen+CtrLen+1+SeedLen;
 
 
   // signals
@@ -99,7 +100,6 @@ module csrng_ctr_drbg_cmd import csrng_pkg::*; #(
   logic [SeedLen-1:0] rcstage_adata;
   logic               rcstage_fips;
   logic               fips_modified;
-  logic               ctr_drbg_cmd_sts_err;
 
   // cmdreq fifo
   logic [CmdreqFifoWidth-1:0] sfifo_cmdreq_rdata;
@@ -319,12 +319,6 @@ module csrng_ctr_drbg_cmd import csrng_pkg::*; #(
 
   // block ack
   assign ctr_drbg_cmd_ack_o = sfifo_keyvrc_pop;
-
-  // Return a status error when the state is not zeroized properly during a UNI command.
-  assign ctr_drbg_cmd_sts_err = sfifo_keyvrc_pop && (ctr_drbg_cmd_ccmd_o == UNI) &&
-         (sfifo_keyvrc_wdata >> (KeyVRCFifoWidth-UniZeroizeWidth)) == '0;
-
-  assign ctr_drbg_cmd_sts_o = ctr_drbg_cmd_sts_err ? CMD_STS_INVALID_STATE_PARAM : CMD_STS_SUCCESS;
-
+  assign ctr_drbg_cmd_sts_o = CMD_STS_SUCCESS;
 
 endmodule

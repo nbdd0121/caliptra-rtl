@@ -4586,7 +4586,7 @@
 #define CSRNG_REG_SW_CMD_STS_CMD_ACK_LOW                                                            (2)
 #define CSRNG_REG_SW_CMD_STS_CMD_ACK_MASK                                                           (0x4)
 #define CSRNG_REG_SW_CMD_STS_CMD_STS_LOW                                                            (3)
-#define CSRNG_REG_SW_CMD_STS_CMD_STS_MASK                                                           (0x38)
+#define CSRNG_REG_SW_CMD_STS_CMD_STS_MASK                                                           (0x18)
 #define CLP_CSRNG_REG_GENBITS_VLD                                                                   (0x20002020)
 #define CSRNG_REG_GENBITS_VLD                                                                       (0x20)
 #define CSRNG_REG_GENBITS_VLD_GENBITS_VLD_LOW                                                       (0)

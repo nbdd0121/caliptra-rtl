@@ -186,7 +186,7 @@ module csrng_reg_top #(
   logic [31:0] cmd_req_wd;
   logic sw_cmd_sts_cmd_rdy_qs;
   logic sw_cmd_sts_cmd_ack_qs;
-  logic [2:0] sw_cmd_sts_cmd_sts_qs;
+  logic [1:0] sw_cmd_sts_cmd_sts_qs;
   logic genbits_vld_re;
   logic genbits_vld_genbits_vld_qs;
   logic genbits_vld_genbits_fips_qs;
@@ -782,11 +782,11 @@ module csrng_reg_top #(
     .qs     (sw_cmd_sts_cmd_ack_qs)
   );
 
-  //   F[cmd_sts]: 5:3
+  //   F[cmd_sts]: 4:3
   caliptra_prim_subreg #(
-    .DW      (3),
+    .DW      (2),
     .SwAccess(caliptra_prim_subreg_pkg::SwAccessRO),
-    .RESVAL  (3'h0),
+    .RESVAL  (2'h0),
     .Mubi    (1'b0)
   ) u_sw_cmd_sts_cmd_sts (
     .clk_i   (clk_i),
@@ -2098,7 +2098,7 @@ module csrng_reg_top #(
       17'h00080: begin
         reg_rdata_next[1] = sw_cmd_sts_cmd_rdy_qs;
         reg_rdata_next[2] = sw_cmd_sts_cmd_ack_qs;
-        reg_rdata_next[5:3] = sw_cmd_sts_cmd_sts_qs;
+        reg_rdata_next[4:3] = sw_cmd_sts_cmd_sts_qs;
       end
 
       17'h00100: begin
