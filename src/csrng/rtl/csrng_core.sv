@@ -355,12 +355,14 @@ module csrng_core
   logic                        cs_rdata_capt_vld;
   logic                        cs_bus_cmp_alert;
   logic                        cmd_rdy;
+  logic [NApps-1:0]            reseed_cnt_alert;
   logic                        sw_sts_ack;
   logic [1:0]                  efuse_sw_app_enable;
 
   logic                        unused_err_code_test_bit;
   logic                        unused_reg2hw_genbits;
   logic                        unused_int_state_val;
+  logic                        unused_reseed_interval;
 
   caliptra_prim_mubi_pkg::mubi8_t [1:0] en_csrng_sw_app_read;
   caliptra_prim_mubi_pkg::mubi4_t [CsEnableCopies-1:0] mubi_cs_enable_fanout;
@@ -383,6 +385,7 @@ module csrng_core
   logic                      cs_rdata_capt_vld_q, cs_rdata_capt_vld_d;
   logic                      sw_rdy_sts_q, sw_rdy_sts_d;
   logic                      sw_sts_ack_q, sw_sts_ack_d;
+  logic [NApps-1:0]          reseed_cnt_reached_q, reseed_cnt_reached_d;
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -402,6 +405,7 @@ module csrng_core
       cs_rdata_capt_vld_q     <= '0;
       sw_rdy_sts_q            <= '0;
       sw_sts_ack_q            <= '0;
+      reseed_cnt_reached_q    <= '0;
     end else begin
       acmd_q                  <= acmd_d;
       shid_q                  <= shid_d;
@@ -419,6 +423,7 @@ module csrng_core
       cs_rdata_capt_vld_q     <= cs_rdata_capt_vld_d;
       sw_rdy_sts_q            <= sw_rdy_sts_d;
       sw_sts_ack_q            <= sw_sts_ack_d;
+      reseed_cnt_reached_q    <= reseed_cnt_reached_d;
     end
   end
 
@@ -745,6 +750,7 @@ module csrng_core
          acmd_flag0_pfa ||
          cs_main_sm_alert ||
          cs_main_sm_invalid_cmd_seq ||
+         |reseed_cnt_alert ||
          cs_bus_cmp_alert;
 
 
@@ -851,6 +857,8 @@ module csrng_core
       .cmd_stage_shid_i             (cmd_stage_shid[ai]),
       .cmd_stage_bus_i              (cmd_stage_bus[ai]),
       .cmd_stage_rdy_o              (cmd_stage_rdy[ai]),
+      .reseed_cnt_reached_i         (reseed_cnt_reached_q[ai]),
+      .reseed_cnt_alert_o           (reseed_cnt_alert[ai]),
       .cmd_arb_req_o                (cmd_arb_req[ai]),
       .cmd_arb_sop_o                (cmd_arb_sop[ai]),
       .cmd_arb_mop_o                (cmd_arb_mop[ai]),
@@ -873,6 +881,13 @@ module csrng_core
       .cmd_gen_cnt_err_o            (cmd_gen_cnt_err[ai]),
       .cmd_stage_sm_err_o           (cmd_stage_sm_err[ai])
     );
+
+    // Set reseed_cnt_reached_d to true if the max number of generate requests between reseeds
+    // has been reached for the respective counter.
+    assign reseed_cnt_reached_d[ai] =
+        state_db_wr_req && state_db_wr_req_rdy && (state_db_wr_inst_id == ai) ?
+            (state_db_wr_rc >= reg2hw.reseed_interval.q) :
+            reseed_cnt_reached_q[ai];
 
   end : gen_cmd_stage
 
@@ -985,6 +1000,9 @@ module csrng_core
   assign hw2reg.recov_alert_sts.cs_main_sm_invalid_cmd_seq.de = cs_main_sm_invalid_cmd_seq;
   assign hw2reg.recov_alert_sts.cs_main_sm_invalid_cmd_seq.d  = cs_main_sm_invalid_cmd_seq;
 
+  assign hw2reg.recov_alert_sts.cmd_stage_reseed_cnt_alert.de = |reseed_cnt_alert;
+  assign hw2reg.recov_alert_sts.cmd_stage_reseed_cnt_alert.d  = |reseed_cnt_alert;
+
   // HW interface connections (up to 16, numbered 0-14)
   for (genvar hai = 0; hai < (NApps-1); hai = hai+1) begin : gen_app_if
     // cmd req
@@ -996,9 +1014,9 @@ module csrng_core
     assign csrng_cmd_o[hai].csrng_rsp_ack = cmd_stage_ack[hai] ||
         ((cs_main_sm_alert || cs_main_sm_invalid_cmd_seq) && (shid_q == StateId'(hai)));
     assign csrng_cmd_o[hai].csrng_rsp_sts =
-      (cs_main_sm_alert && (shid_q == StateId'(hai))) ? CMD_STS_INVALID_ACMD :
-      (cs_main_sm_invalid_cmd_seq && (shid_q == StateId'(hai))) ? CMD_STS_INVALID_CMD_SEQ :
-      cmd_stage_ack_sts[hai];
+        (cs_main_sm_alert && (shid_q == StateId'(hai))) ? CMD_STS_INVALID_ACMD :
+        (cs_main_sm_invalid_cmd_seq && (shid_q == StateId'(hai))) ? CMD_STS_INVALID_CMD_SEQ :
+        cmd_stage_ack_sts[hai];
     // genbits
     assign csrng_cmd_o[hai].genbits_valid = genbits_stage_vld[hai];
     assign csrng_cmd_o[hai].genbits_fips = genbits_stage_fips[hai];
@@ -1692,6 +1710,7 @@ module csrng_core
   assign unused_err_code_test_bit = (|err_code_test_bit[19:16]) || (|err_code_test_bit[27:26]);
   assign unused_reg2hw_genbits = (|reg2hw.genbits.q);
   assign unused_int_state_val = (|reg2hw.int_state_val.q);
+  assign unused_reseed_interval = reg2hw.reseed_interval.qe;
 
   //--------------------------------------------
   // Assertions
