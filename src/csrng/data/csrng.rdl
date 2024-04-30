@@ -289,7 +289,7 @@ addrmap csrng {
             Writing a zero resets this status bit.";
             sw = rw;
             onwrite = woclr;
-        } CS_MAIN_SM_ALERT[13:13];
+        } CMD_STAGE_INVALID_ACMD_ALERT[13:13];
         field {
             desc = "This bit is set when an out of order command is received by the main state machine.
             This happens when an instantiate command is sent for a state that was already
@@ -299,7 +299,7 @@ addrmap csrng {
             Writing a zero resets this status bit.";
             sw = rw;
             onwrite = woclr;
-        } CS_MAIN_SM_INVALID_CMD_SEQ[14:14];
+        } CMD_STAGE_INVALID_CMD_SEQ_ALERT[14:14];
         field {
             desc = "This bit is set when the maximum number of generate requests between reseeds is
             exceeded.
