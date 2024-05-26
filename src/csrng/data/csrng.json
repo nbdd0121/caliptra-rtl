@@ -368,7 +368,7 @@
             {
               "value": "1",
               "name": "INVALID_ACMD",
-              "desc": "Request completed with an invalid application command error.\nThis error indicates that the issued application command doesn't represent a valid operation.\nIf this error appears, the main state machine will hang and the entropy complex has to be restarted."
+              "desc": "Request completed with an invalid application command error.\nThis error indicates that the issued application command doesn't represent a valid operation."
             },
             {
               "value": "2",
