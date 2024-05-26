@@ -170,20 +170,8 @@ addrmap csrng {
             desc = "This field represents the status code returned with the application command ack.
             It is updated each time a command ack is asserted on the internal application
             interface for software use.
-            To check whether a command was succesful, wait for !!INTR_STATE.CS_CMD_REQ_DONE or
-            !!SW_CMD_STS.CMD_ACK to be high and then check the value of this field.
-            0x0: Request completed successfully.
-            0x1: Request completed with an invalid application command error.
-                 This error indicates that the issued application command doesn't represent a valid operation.
-                 If this error appears, the main state machine will hang and the entropy complex has to be restarted.
-            0x2: Request completed with an invalid counter drbg generation command error.
-                 This error indicates that CSRNG entropy was generated for a command that is not a generate command.
-                 In this case the entropy should not be considered as valid.
-            0x3: This error indicates that the last command was issued out of sequence.
-                 This happens when a command other than instantiate was issued without sending an instantiate command first.
-                 This can also happen when an uninstantiate command is sent without instantiating first.
-            0x4: This error indicates that the number of generate commands between reseeds exceeded the maximum number allowed.
-                 This happens only for generate commands.";
+            To check whether a command was successful, wait for !!INTR_STATE.CS_CMD_REQ_DONE or
+            !!SW_CMD_STS.CMD_ACK to be high and then check the value of this field.";
             sw = r;
         } CMD_STS[5:3] = 0x0;
     } SW_CMD_STS @ 0x20;
