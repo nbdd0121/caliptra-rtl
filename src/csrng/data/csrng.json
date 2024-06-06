@@ -47,6 +47,13 @@
       "desc": "Selection of the S-Box implementation. See aes_pkg.sv.",
       "local": "false",
       "expose": "true"
+    },
+    {
+      "name": "NumApps",
+      "type": "int",
+      "default": "3",
+      "desc": "Number of application interfaces",
+      "local": "true"
     }
   ],
   "interrupt_list": [
@@ -332,6 +339,25 @@
           "resval": "0xffff_ffff"
         }
       ]
+    },
+    {
+      "multireg": {
+        "name": "RESEED_COUNTER",
+        "desc": "Reseed counter.\n\nThe per-instance reseed counter indicates the number of Generate requests that have been completed since new entropy input has been obtained with an Instantiate or a Reseed command.",
+        "count": "NumApps",
+        "cname": "RESEED_COUNTER",
+        "swaccess": "ro",
+        "hwaccess": "hwo",
+        "hwext": "true",
+        "fields": [
+          {
+            "bits": "31:0",
+            "name": "RESEED_COUNTER",
+            "desc": "Reseed Counter indicating the number of completed Generate requests since the last Instantiate or Reseed command.",
+            "resval": "0"
+          }
+        ]
+      }
     },
     {
       "name": "SW_CMD_STS",

@@ -361,6 +361,8 @@ module csrng_core
   logic                        sw_sts_ack;
   logic [1:0]                  efuse_sw_app_enable;
 
+  logic [NApps-1:0][31:0]      reseed_counter;
+
   logic                        unused_err_code_test_bit;
   logic                        unused_reg2hw_genbits;
   logic                        unused_int_state_val;
@@ -1270,7 +1272,9 @@ module csrng_core
     .state_db_reg_rd_val_o(state_db_reg_rd_val),
     .state_db_sts_ack_o(state_db_sts_ack),
     .state_db_sts_sts_o(state_db_sts_sts),
-    .state_db_sts_id_o(state_db_sts_id)
+    .state_db_sts_id_o(state_db_sts_id),
+
+    .reseed_counter_o(reseed_counter)
   );
 
   assign statedb_wr_select_d =
@@ -1294,6 +1298,12 @@ module csrng_core
   assign state_db_wr_rc = gen_blk_select ? gen_result_rc : cmd_result_rc;
   assign state_db_wr_sts = gen_blk_select ? gen_result_ack_sts : cmd_result_ack_sts;
 
+  // Forward the reseed counter values to the register interface.
+  always_comb begin : reseed_counter_assign
+    for (int i = 0; i < NApps; i++) begin
+      hw2reg.reseed_counter[i].d = reseed_counter[i];
+    end
+  end
 
   //--------------------------------------------
   // entropy interface
@@ -1758,6 +1768,10 @@ module csrng_core
   `CALIPTRA_ASSERT(CsrngUniZeroizeV_A,    state_db_zeroize -> (state_db_wr_v    == '0))
   `CALIPTRA_ASSERT(CsrngUniZeroizeRc_A,   state_db_zeroize -> (state_db_wr_rc   == '0))
   `CALIPTRA_ASSERT(CsrngUniZeroizeSts_A,  state_db_zeroize -> (state_db_wr_sts  == '0))
+
+  // The number of application interfaces defined in the hjson must match the number of
+  // application interfaces derived from the top-level parameter NHwApps.
+  `CALIPTRA_ASSERT_INIT(CsrngNumAppsMatch_A, NumApps == NApps)
 `endif
 
 endmodule // csrng_core
