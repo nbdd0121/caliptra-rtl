@@ -5012,6 +5012,8 @@
 #define ENTROPY_SRC_REG_RECOV_ALERT_STS_FIPS_FLAG_FIELD_ALERT_MASK                                  (0x20000)
 #define ENTROPY_SRC_REG_RECOV_ALERT_STS_RNG_FIPS_FIELD_ALERT_LOW                                    (18)
 #define ENTROPY_SRC_REG_RECOV_ALERT_STS_RNG_FIPS_FIELD_ALERT_MASK                                   (0x40000)
+#define ENTROPY_SRC_REG_RECOV_ALERT_STS_POSTHT_ENTROPY_DROP_ALERT_LOW                               (31)
+#define ENTROPY_SRC_REG_RECOV_ALERT_STS_POSTHT_ENTROPY_DROP_ALERT_MASK                              (0x80000000)
 #define CLP_ENTROPY_SRC_REG_ERR_CODE                                                                (0x200030d8)
 #define ENTROPY_SRC_REG_ERR_CODE                                                                    (0xd8)
 #define ENTROPY_SRC_REG_ERR_CODE_SFIFO_ESRNG_ERR_LOW                                                (0)
