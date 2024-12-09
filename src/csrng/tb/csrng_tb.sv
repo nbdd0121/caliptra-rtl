@@ -361,7 +361,7 @@ module csrng_tb
     $display("Uninitiate Command");
     write_single_word(ADDR_CMD_REQ, 32'h0905);
     repeat (200) @(posedge clk_tb);
-    poll_register_value(ADDR_SW_CMD_STS, 32'h1);
+    poll_register_value(ADDR_SW_CMD_STS, 32'h6);
 
     $display("Initiate Command - Writing 48B of seed");
     write_single_word(ADDR_CMD_REQ, 32'h06C1);
@@ -378,7 +378,7 @@ module csrng_tb
     write_single_word(ADDR_CMD_REQ, 32'ha468649e);
     write_single_word(ADDR_CMD_REQ, 32'hdf5d73fa);
 
-    poll_register_value(ADDR_SW_CMD_STS, 32'h1);
+    poll_register_value(ADDR_SW_CMD_STS, 32'h6);
 
     $display("Generate Command - 512b");
     write_single_word(ADDR_CMD_REQ, 32'h4903);
@@ -408,7 +408,7 @@ module csrng_tb
     read_and_compare(ADDR_GENBITS, 32'hc58a553e);
     read_and_compare(ADDR_GENBITS, 32'h5d6e1012);
 
-    poll_register_value(ADDR_SW_CMD_STS, 32'h1);
+    poll_register_value(ADDR_SW_CMD_STS, 32'h6);
 
     $display("Generate Command - 512b");
     write_single_word(ADDR_CMD_REQ, 32'h4903);
@@ -438,7 +438,7 @@ module csrng_tb
     read_and_compare(ADDR_GENBITS, 32'hdb17514c);
     read_and_compare(ADDR_GENBITS, 32'ha43c41b7);
 
-    poll_register_value(ADDR_SW_CMD_STS, 32'h1);
+    poll_register_value(ADDR_SW_CMD_STS, 32'h6);
 
   endtask // run_smoke_test
 
