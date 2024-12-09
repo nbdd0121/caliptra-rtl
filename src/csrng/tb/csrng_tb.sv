@@ -49,16 +49,17 @@ module csrng_tb
   parameter ADDR_REGWEN          = 32'h10;
   parameter ADDR_CTRL            = 32'h14;
   parameter ADDR_CMD_REQ         = 32'h18;
-  parameter ADDR_SW_CMD_STS      = 32'h1c;
-  parameter ADDR_GENBITS_VLD     = 32'h20;
-  parameter ADDR_GENBITS         = 32'h24;
-  parameter ADDR_INT_STATE_NUM   = 32'h28;
-  parameter ADDR_INT_STATE_VAL   = 32'h2c;
-  parameter ADDR_HW_EXC_STS      = 32'h30;
-  parameter ADDR_RECOV_ALERT_STS = 32'h34;
-  parameter ADDR_ERR_CODE        = 32'h38;
-  parameter ADDR_ERR_CODE_TEST   = 32'h3c;
-  parameter ADDR_MAIN_SM_STATE   = 32'h40;
+  parameter ADDR_RESEED_INTERVAL = 32'h1c;
+  parameter ADDR_SW_CMD_STS      = 32'h20;
+  parameter ADDR_GENBITS_VLD     = 32'h24;
+  parameter ADDR_GENBITS         = 32'h28;
+  parameter ADDR_INT_STATE_NUM   = 32'h2c;
+  parameter ADDR_INT_STATE_VAL   = 32'h30;
+  parameter ADDR_HW_EXC_STS      = 32'h34;
+  parameter ADDR_RECOV_ALERT_STS = 32'h38;
+  parameter ADDR_ERR_CODE        = 32'h3c;
+  parameter ADDR_ERR_CODE_TEST   = 32'h40;
+  parameter ADDR_MAIN_SM_STATE   = 32'h44;
 
   parameter AHB_HTRANS_IDLE     = 0;
   parameter AHB_HTRANS_BUSY     = 1;
